@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OAuth Authorization Server</title>
+</head>
+<body>
+  <h1>OAuth Authorization server</h1>
+  <h2>Approve the client?</h2>
+  <ul>
+      <li>Client-ID: $client_id</li>
+  </ul>
+  <form action="/approve" method="POST">
+      <input type="hidden" name="reqid" value="$req_id">
+      <ul>
+          <li>
+              <input type="checkbox" id="read" name="scope_read" checked />
+              <label for="read">read</label>
+          </li>
+          <li>
+              <input type="checkbox" id="write" name="scope_write" checked />
+              <label for="write">write</label>
+          </li>
+          <li>
+              <input type="checkbox" id="delete" name="scope_delete" checked />
+              <label for="delete">delete</label>
+          </li>
+      </ul>
+      <input type="submit" value="Approve" name="approve">
+      <input type="submit" value="Deny" name="deny">
+  </form>
+</body>
+</html>

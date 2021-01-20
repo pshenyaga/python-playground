@@ -1,0 +1,16 @@
+{% extends "base.html.j2" %}
+
+{% set title = "OAuth server" %}
+
+{% block content %}
+    <h2>Client information:</h2>
+    <ul>
+        <li>scope:</li>
+        <li>redirect_uri:</li>
+    </ul>
+    <h2>Server information</h2>
+    <ul>
+        <li>authorization_endpoint:</li>
+        <li>token_endpoint:</li>
+    </ul>
+{% endblock %}

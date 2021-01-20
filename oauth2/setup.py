@@ -4,7 +4,7 @@ setup(
     version="0.1",
     package_dir={"": "src"},
     packages=["oauth2srv"],
-    install_requires=['aiohttp'],
+    install_requires=['aiohttp', aiohttp_jinja2],
     extras_require={
         'dev': [ ]
     }
