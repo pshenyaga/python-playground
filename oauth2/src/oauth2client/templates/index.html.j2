@@ -1,0 +1,9 @@
+{% extends "base.html.j2" %}
+
+{% set title = "OAuth client" %}
+
+{% block content %}
+    <p>Access token value:</p>
+    <a href="/authorize">Get OAuth Token</a>
+    <a href="/fetch_resource">Get protected resource</a>
+{% endblock %}
