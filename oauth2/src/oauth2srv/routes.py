@@ -12,14 +12,15 @@ async def index(request: web.Request) -> web.Response:
 @routes.get('/authorize')
 @aiohttp_jinja2.template('authorize.html.j2')
 async def authorize(request: web.Request) -> web.Response:
-    clients_db: dict = request.query.get('clients')
+    clients_db: list = request.app['clients_db']
+    
     response_type = request.query.get('response_type', None)
     client_id = request.query.get('client_id', None)
     redirect_uri = request.query.get('redirect_uri', None)
 
-    if not response_type or not clients_db or not redirect_uri:
+    if not response_type or not redirect_uri or not client_id:
         # Wrong request. Display error page
-        pass
+        raise web.HTTPBadRequest()
 
     client = next((c for c in clients_db if c['client_id'] == client_id), None)
 
@@ -27,4 +28,4 @@ async def authorize(request: web.Request) -> web.Response:
         # Client unknown. Display error page.
         pass
 
-    return { 'client_id': client_id }
+    return { 'client_id': client['client_id'] }

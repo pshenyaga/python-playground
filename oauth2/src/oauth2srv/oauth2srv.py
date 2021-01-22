@@ -20,7 +20,7 @@ def init_app(_clients: dict) -> web.Application:
     aiohttp_jinja2.setup(_app, loader=jinja2.PackageLoader('oauth2srv', 'templates'))
     
     _app.add_routes(routes)
-    _app['clients'] = _clients
+    _app['clients_db'] = _clients
 
     return _app
 
