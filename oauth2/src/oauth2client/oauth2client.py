@@ -16,17 +16,18 @@ auth_server = {
     'token_endpoint': 'http://localhost:9001/token'
 }
 
-def init_app() -> web.Application: 
+def init_app(_client: dict, _auth_server: dict) -> web.Application: 
     _app = web.Application()
 
     # jinja2 template renderer
     aiohttp_jinja2.setup(_app, loader=jinja2.PackageLoader('oauth2client', 'templates'))
 
     _app.add_routes(routes)
+    _app['config'] = {'client': _client, 'auth_server': _auth_server}
 
     return _app
 
 
 def main():
-    app = init_app()
+    app = init_app(client, auth_server)
     web.run_app(app, host='127.0.0.1', port=9000)
