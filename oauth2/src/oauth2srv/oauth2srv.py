@@ -13,6 +13,8 @@ clients = [
     }
 ]
 
+requests = {}
+
 def init_app(_clients: dict) -> web.Application:
     _app = web.Application()
 
@@ -21,6 +23,7 @@ def init_app(_clients: dict) -> web.Application:
     
     _app.add_routes(routes)
     _app['clients_db'] = _clients
+    _app['requests_db'] = requests
 
     return _app
 

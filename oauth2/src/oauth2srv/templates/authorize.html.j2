@@ -4,5 +4,13 @@
 
 {% block content %}
     <h2>Approve this client?</h2>
-    ID: {{ client_id }}
+    <ul>
+        ID: {{ client_id }}
+    </ul>
+    <form action="/approve" method="POST">
+        <input type="hidden" name="reqid" value="{{ req_id }}" />
+        <input type="submit" value="Approve" name="approve" />
+        <input type="submit" value="Deny" name="deny" />
+    </form>
+
 {% endblock %}
