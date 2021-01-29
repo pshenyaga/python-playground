@@ -39,23 +39,29 @@ async def authorize(request: web.Request) -> dict:
     req_id = ''.join(random.choices(ascii_letters, k=8))
     requests_db.update({req_id: request.query})
 
-    return { 'client_id': client['client_id'], 'req_id': req_id }
+    return {'client_id': client['client_id'], 'req_id': req_id}
 
 @routes.post('/approve')
+@aiohttp_jinja2.template('base.html.j2')
 async def approve(request: web.Request) -> web.Response:
     requests_db: dict = request.app['requests_db']
     data = await request.post()
 
     request_id = data.get('reqid', None)
-    origin_request = requests_db.get(request_id, None)
+    origin_request = requests_db.pop(request_id, None)
 
     if not origin_request:
-        return web.Response(text='No matching authorization request')
+        return {'title': 'OAuth server', 'error': 'No matching athorization request'}
 
     if 'approve' in data:
-        print('access approved')
-        return web.Response(text='Access approved')
+        if origin_request['response_type'] == 'code':
+            code = ''.join(random.choices(ascii_letters, k=16))
+            # We need to save code for the future use
+            redirect_url = build_url(origin_request['redirect_uri'], {'code': code})
+            raise web.HTTPFound(location=redirect_url)
+        else:
+            redirect_url = build_url(origin_request['redirect_uri'], {'error', 'usupported_response_type'})
+            raise web.HTTPFound(location=redirect_url)
     else:
         redirect_url = build_url(origin_request['redirect_uri'], {'error': 'access_denied'})
         raise web.HTTPFound(location=redirect_url)
-
