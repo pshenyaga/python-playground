@@ -2,8 +2,10 @@ import aiohttp_jinja2
 import jinja2
 
 from aiohttp import web
+from oauth2helpers import data_handler
 
 from .routes import routes
+
 
 clients = [
     {
@@ -22,8 +24,10 @@ def init_app(_clients: dict) -> web.Application:
     aiohttp_jinja2.setup(_app, loader=jinja2.PackageLoader('oauth2srv', 'templates'))
     
     _app.add_routes(routes)
+
+    data_handler.init(_app)
+
     _app['clients_db'] = _clients
-    _app['requests_db'] = requests
 
     return _app
 
