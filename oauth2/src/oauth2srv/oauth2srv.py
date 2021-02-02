@@ -6,18 +6,7 @@ from oauth2helpers import data_handler
 
 from .routes import routes
 
-
-clients = [
-    {
-        'client_id': 'oauth-client-1',
-        'client_secret': 'oauth-client-secret-1',
-        'redirect_uris': ['http://localhost:9000/callback']
-    }
-]
-
-requests = {}
-
-def init_app(_clients: dict) -> web.Application:
+def init_app() -> web.Application:
     _app = web.Application()
 
     # jinja2 template renderer
@@ -27,10 +16,8 @@ def init_app(_clients: dict) -> web.Application:
 
     data_handler.init(_app)
 
-    _app['clients_db'] = _clients
-
     return _app
 
 def main():
-    app = init_app(clients)
+    app = init_app()
     web.run_app(app, host='127.0.0.1', port=9001)

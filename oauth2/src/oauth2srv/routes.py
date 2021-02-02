@@ -20,8 +20,6 @@ async def index(request: web.Request) -> dict:
 async def authorize(request: web.Request) -> dict:
     dh: DataHandlerClient = request.app['data_handler']
 
-    clients_db: list = request.app['clients_db']
-    
     response_type = request.query.get('response_type', None)
     client_id = request.query.get('client_id', None)
     redirect_uri = request.query.get('redirect_uri', None)
@@ -30,7 +28,7 @@ async def authorize(request: web.Request) -> dict:
         # Wrong request. Display error page
         raise web.HTTPBadRequest()
 
-    client = next((c for c in clients_db if c['client_id'] == client_id), None)
+    client = await dh.get_client_by_id(client_id)
 
     if not client:
         return {'error': 'Unknown client'}

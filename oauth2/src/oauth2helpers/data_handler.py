@@ -45,7 +45,7 @@ class Client:
         return deserialize_multidict(self.db.get(_id, None))
 
     async def get_client_by_id(self, _id: str) -> dict:
-        raise NotImplementedError()
+        return next((client for client in self.db['clients'] if client['client_id'] == _id), None)
 
 
 def init(app: web.Application) -> None:
