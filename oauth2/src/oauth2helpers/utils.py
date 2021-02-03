@@ -1,6 +1,17 @@
-import urllib.parse as urllib
+import urllib.parse as urlparse
 import json
+
+from base64 import b64encode, b64decode
 from multidict import MultiDict, MultiDictProxy
+
+def encode_client_credential(client_id: str, client_secret: str) -> str:
+    return b64encode(urlparse.quote("{}:{}".format(client_id, client_secret)).encode('ascii')).decode()
+
+
+def decode_client_credential(encoded: str) -> (str, str):
+    # TODO: check if string is encoded
+    return tuple(urlparse.unquote(b64decode(encoded).decode()).split(':'))
+
 
 def build_url (base: str, options: dict, fragment: str = '') -> str:
     """Generates URL
@@ -14,11 +25,11 @@ def build_url (base: str, options: dict, fragment: str = '') -> str:
         str: Generated URL
     """
 
-    url_fragments = list(urllib.urlparse(base))
-    url_fragments[4] = urllib.urlencode(options)
-    url_fragments[5] = urllib.quote(fragment)
+    url_fragments = list(urlparse.urlparse(base))
+    url_fragments[4] = urlparse.urlencode(options)
+    url_fragments[5] = urlparse.quote(fragment)
     
-    return urllib.urlunparse(url_fragments)
+    return urlparse.urlunparse(url_fragments)
 
 
 def deserialize_multidict(json_string: str) -> MultiDictProxy:
@@ -31,3 +42,10 @@ def deserialize_multidict(json_string: str) -> MultiDictProxy:
 
         return MultiDictProxy(result)
     return None
+
+
+if __name__ == "__main__":
+    pass
+    # encoded = encode_client_credential('oauth-client-1', 'oauth-client-secret-1') 
+    # print(encode_client_credential('oauth-client-1', 'oauth-client-secret-1'))
+    # print(decode_client_credential(encoded))
