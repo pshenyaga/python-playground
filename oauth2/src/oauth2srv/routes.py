@@ -3,7 +3,7 @@ import random
 
 from aiohttp import web
 from string import ascii_letters
-from oauth2helpers import build_url
+from oauth2helpers import build_url, decode_client_credential
 from oauth2helpers.data_handler import Client as DataHandlerClient
 
 
@@ -43,7 +43,7 @@ async def authorize(request: web.Request) -> dict:
 
 @routes.post('/approve')
 @aiohttp_jinja2.template('base.html.j2')
-async def approve(request: web.Request) -> web.Response:
+async def approve(request: web.Request) -> dict:
     dh: DataHandlerClient = request.app['data_handler']
 
     data = await request.post()
@@ -65,3 +65,10 @@ async def approve(request: web.Request) -> web.Response:
         redirect_url = build_url(origin_request['redirect_uri'], {'error': 'access_denied'})
 
     raise web.HTTPFound(location=redirect_url)
+
+@routes.post('/token')
+async def token(request: web.Request) -> web.Response:
+    auth = request.headers.get('authorization', None)
+    if auth:
+        client_id, client_secret = decode_client_credential(auth.split()[1])
+        return web.Response(text="{}: {}".format(client_id, client_secret))
