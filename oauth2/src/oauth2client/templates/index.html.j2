@@ -3,7 +3,7 @@
 {% set title = "OAuth client" %}
 
 {% block content %}
-    <p>Access token value:</p>
+    <p>Access token value: {{ access_token }}</p>
     <a href="/authorize">Get OAuth Token</a>
     <a href="/fetch_resource">Get protected resource</a>
 {% endblock %}

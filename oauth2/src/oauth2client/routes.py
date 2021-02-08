@@ -8,12 +8,13 @@ routes = web.RouteTableDef()
 
 @routes.get('/')
 @aiohttp_jinja2.template('index.html.j2')
-async def index(Request: web.Request) -> web.Response:
-    # app = Request.app
-    return {}
+async def index(request: web.Request) -> web.Response:
+    client: dict = request.app['config']['client']
+    return {'access_token': client.get('access_token', None)}
 
 @routes.get('/authorize')
 async def authorize(request: web.Request) -> web.Response:
+    # TODO: add cross site protection
     app = request.app
     client_config = app['config']['client']
     auth_server_config = app['config']['auth_server']
@@ -30,7 +31,7 @@ async def authorize(request: web.Request) -> web.Response:
 @routes.get('/callback')
 async def callback(request: web.Request):
     session: ClientSession = None
-    client_config = request.app['config']['client']
+    client_config: dict = request.app['config']['client']
     auth_server_config = request.app['config']['auth_server']
 
     # TODO: check for errors in query
@@ -47,6 +48,9 @@ async def callback(request: web.Request):
 
     async with ClientSession() as session:
         async with session.post(auth_server_config['token_endpoint'], headers=headers, json=form_data) as response:
-            return web.Response(text=str(response.status))            
+            # TODO: Check for errors
+            json_res: dict = await response.json()
+            client_config.update({'access_token': json_res.get('access_token', None)})
+            raise web.HTTPFound(location='/')
 
     return web.Response(text='code: {}'.format(auth_code))

@@ -10,6 +10,7 @@ class Client:
     """
     def __init__(self):
         self.db = {
+            'codes': {},
             'requests': {},
             'clients': [
                 {
@@ -19,6 +20,31 @@ class Client:
                 }]
         }
 
+    async def add_code(self, _code: str, query: MultiDictProxy) -> None:
+        """Store request identified by code in database
+
+        Args:
+            _code (str): Response code.
+            query (MultiDictProxy): query to store
+        """
+        # TODO: check if code already exists in database
+        self.db['codes'].update({_code: json.dumps({key: query.getall(key) for key in query.keys()})})
+
+    async def delete_code(self, _code: str) -> MultiDictProxy:
+        """Deletes stored request from codes.
+
+        Args:
+            _code (str): Code
+
+        Returns:
+            MultiDictProxy: Removed request
+        """
+        # TODO: raise error if request doesn't exist
+        return deserialize_multidict(self.db['codes'].get(_code, None))
+
+    async def get_code(self, _code: str) -> MultiDictProxy:
+        return deserialize_multidict(self.db['codes'].get(_code, None))
+
     async def add_request(self, _id: str, query: MultiDictProxy) -> None:
         """Store request in database
 
@@ -27,7 +53,7 @@ class Client:
             query (MultiDictProxy): query to store
         """
         # TODO: check if _id already exists in database
-        self.db.update({_id: json.dumps({key: query.getall(key) for key in query.keys()})})
+        self.db['requests'].update({_id: json.dumps({key: query.getall(key) for key in query.keys()})})
 
     async def delete_request(self, _id: str) -> MultiDictProxy:
         """Deletes stored request from database and returns it
@@ -39,10 +65,10 @@ class Client:
         """
 
         #TODO: raise error if request doesn't exist
-        return deserialize_multidict(self.db.pop(_id, None))
+        return deserialize_multidict(self.db['requests'].pop(_id, None))
 
     async def get_request(self, _id: str) -> MultiDictProxy:
-        return deserialize_multidict(self.db.get(_id, None))
+        return deserialize_multidict(self.db['requests'].get(_id, None))
 
     async def get_client_by_id(self, _id: str) -> dict:
         return next((client for client in self.db['clients'] if client['client_id'] == _id), None)

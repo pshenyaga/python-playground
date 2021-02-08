@@ -1,5 +1,6 @@
 import aiohttp_jinja2
 import random
+import json
 
 from aiohttp import web
 from string import ascii_letters
@@ -57,7 +58,9 @@ async def approve(request: web.Request) -> dict:
     if 'approve' in data:
         if origin_request['response_type'] == 'code':
             code = ''.join(random.choices(ascii_letters, k=16))
-            # We need to save code for the future use
+
+            await dh.add_code(code, origin_request)
+
             redirect_url = build_url(origin_request['redirect_uri'], {'code': code})
         else:
             redirect_url = build_url(origin_request['redirect_uri'], {'error', 'usupported_response_type'})
@@ -68,7 +71,38 @@ async def approve(request: web.Request) -> dict:
 
 @routes.post('/token')
 async def token(request: web.Request) -> web.Response:
+    dh: DataHandlerClient = request.app['data_handler']
+
+    data = await request.json()
+
     auth = request.headers.get('authorization', None)
     if auth:
         client_id, client_secret = decode_client_credential(auth.split()[1])
-        return web.Response(text="{}: {}".format(client_id, client_secret))
+
+    if 'client_id' in data:
+        if client_id:
+            err_body = json.dumps({'error': 'invalid_client'})
+            raise web.HTTPUnauthorized(content_type='application/json', text=err_body)
+
+        client_id = data.get('client_id', None)
+        client_secret = data.get('client_secret')
+
+    client = await dh.get_client_by_id(client_id)
+
+    if not client or client['client_secret'] != client_secret:
+        err_body = json.dumps({'error': 'invalid_client'})
+        raise web.HTTPUnauthorized(content_type='application/json', text=err_body)
+
+    grant_type = data.get('grant_type')
+    if grant_type == 'authorization_code':
+        origin_request = await dh.delete_code(data.get('code', None))
+        if origin_request and origin_request.get('client_id', None) == client_id:
+            access_token = ''.join(random.choices(ascii_letters, k=16))
+            # TODO: save access_token for later use
+            return web.json_response({'access_token': access_token, 'token_type': 'Bearer'})
+        else:
+            err_text = json.dumps({'error': 'invalid_grant'})
+            raise web.HTTPUnauthorized(content_type='application/json', text=err_text)
+    else:
+        err_text = json.dumps({'error': 'unsupported_gran_type'})
+        raise web.HTTPUnauthorized(content_type='application/json', text=err_text)
