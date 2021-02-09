@@ -1,0 +1,9 @@
+
+{% extends "base.html.j2" %}
+
+{% set title = "OAuth client" %}
+
+{% block content %}
+    <h2>Data from protected resource:</h2>
+    <p>Access token value: {{ access_token }}</p>
+{% endblock %}

@@ -16,6 +16,11 @@ auth_server = {
     'token_endpoint': 'http://localhost:9001/token'
 }
 
+protected_resource = 'http://localhost:9002/resource'
+wordApi = 'http://localhost:9002/words'
+produceApi = 'http://localhost:9002/produce'
+favoritesApi = 'http://localhost:9002/favorites'
+
 def init_app(_client: dict, _auth_server: dict) -> web.Application: 
     _app = web.Application()
 
@@ -23,7 +28,9 @@ def init_app(_client: dict, _auth_server: dict) -> web.Application:
     aiohttp_jinja2.setup(_app, loader=jinja2.PackageLoader('oauth2client', 'templates'))
 
     _app.add_routes(routes)
-    _app['config'] = {'client': _client, 'auth_server': _auth_server}
+    _app['config'] = {
+        'client': _client,
+        'auth_server': _auth_server, 'protected_resource': protected_resource}
 
     return _app
 
