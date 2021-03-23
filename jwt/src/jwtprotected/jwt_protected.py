@@ -37,5 +37,27 @@ async def login(request: web.Request) -> web.Response:
     return web.json_response({'token': jwt_token})
 
 
-app = web.Application()
+async def get_user(request: web.Request) -> web.Response:
+    return web.json_response({'user': str(request.user)})
+
+
+async def auth_middleware(app, handler):
+    async def middleware(request: web.Request):
+        request.user = None
+        jwt_token = request.headers.get('authorization', None)
+        if jwt_token:
+            try:
+                payload = jwt.decode(
+                    jwt_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            except (jwt.DecodeError, jwt.ExpiredSignatureError):
+                return web.json_response({'message': 'Token is invalid'}, status=400)
+
+            request.user = User.objects.get(id=payload['user_id'])
+        return await handler(request)
+
+    return middleware
+
+
+app = web.Application(middlewares=[auth_middleware])
 app.router.add_post('/login', login)
+app.router.add_get('/get-user', get_user)
