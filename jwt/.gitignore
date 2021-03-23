@@ -8,3 +8,4 @@ venv*
 dist
 
 jwt.egg-info
+jwt_playground.egg-info

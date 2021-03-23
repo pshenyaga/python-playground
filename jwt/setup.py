@@ -3,9 +3,9 @@ setup(
     name='jwt_playground',
     version='0.0.1',
     package_dir={'': 'src'},
-    packages=['jwt_protected'],
-    install_requires=['aiohttp', 'aiohttp_jinja2'],
+    packages=['jwtprotected'],
+    install_requires=['aiohttp', 'PyJWT'],
     extras_require={
-        'dev': [ ]
+        'dev': ['gunicorn', 'httpie']
     }
 )
