@@ -1,0 +1,10 @@
+*.pyc
+__pycache__
+*.swp
+venv
+venv*
+.idea
+.vscode
+dist
+
+jwt.egg-info
