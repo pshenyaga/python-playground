@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content%}
+    {% if is_authorized %}
+        <h1>Main protected resources</h1>
+        <h1>Resources protected by JWT</h1>
+    {% else %}
+        <h1>You must to be authorized</h1>
+    {% endif %}
+{% endblock %}
