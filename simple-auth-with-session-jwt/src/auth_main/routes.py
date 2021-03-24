@@ -23,7 +23,7 @@ async def login(request: web.Request) -> None:
     post_data = await request.post()
     user = None
     try:
-        user: data_models.User = data_models.UserStorage.get_user(name = post_data.get('name', None))
+        user: data_models.User = data_models.UserStorage.get_user(email = post_data.get('email', None))
         user.match_password(post_data.get('password', None))
 
     except (data_models.UserStorage.UserNotFound, data_models.User.PasswordDoesNotMatch) as e:

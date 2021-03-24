@@ -1,13 +1,13 @@
 from aiohttp.log import server_logger
 
 class User:
-    def __init__(self, name: str, email: str, password: str):
-        self.name = name
+    def __init__(self, id: int, email: str, password: str):
+        self.id = id
         self.email = email
         self._password = password
 
     def __repr__(self):
-        template = 'User name={s.name}: <{s.email}>'
+        template = 'User id={s.id}: <{s.email}>'
         return template.format(s=self)
 
     def match_password(self, password: str):
@@ -19,16 +19,18 @@ class User:
 
 class UserStorage:
     _users = []
+    _currentId = 0
 
     @classmethod
-    def add_user(cls, name: str, email: str, password: str):
+    def add_user(cls, email: str, password: str):
         try:
-            cls.get_user(name=name, email=email)
+            cls.get_user(email=email)
             raise cls.UserAlreadyExists            
 
         except cls.UserNotFound:
             cls._users.append(
-                User(name, email, password))
+                User(cls._currentId, email, password))
+            cls._currentId += 1
 
     @classmethod
     def get_user(cls, **kwargs):
@@ -48,5 +50,5 @@ class UserStorage:
         pass
 
 def create_example_storage():
-    UserStorage.add_user('user1', 'user1.example.com', '111111')
-    UserStorage.add_user('user2', 'user2.example.com', '222222')
+    UserStorage.add_user('user1@example.com', '111111')
+    UserStorage.add_user('user2@example.com', '222222')
