@@ -19,7 +19,7 @@ def init_app() -> web.Application:
     # aiohttp_session setup
     fernet_key = fernet.Fernet.generate_key()
     secret_key = base64.urlsafe_b64decode(fernet_key)
-    setup(_app, EncryptedCookieStorage(fernet_key))
+    setup(_app, EncryptedCookieStorage(secret_key))
 
     # logging setup
     logging.basicConfig(level=logging.DEBUG)
