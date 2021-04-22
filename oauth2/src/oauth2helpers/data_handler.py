@@ -3,7 +3,7 @@ import json
 from aiohttp import web
 from multidict import MultiDictProxy, MultiDict
 
-from .utils import deserialize_multidict
+from .utils import json_to_multidict
 
 class Client:
     """Client for simple oaut2 database
@@ -40,10 +40,10 @@ class Client:
             MultiDictProxy: Removed request
         """
         # TODO: raise error if request doesn't exist
-        return deserialize_multidict(self.db['codes'].get(_code, None))
+        return json_to_multidict(self.db['codes'].get(_code, None))
 
     async def get_code(self, _code: str) -> MultiDictProxy:
-        return deserialize_multidict(self.db['codes'].get(_code, None))
+        return json_to_multidict(self.db['codes'].get(_code, None))
 
     async def add_request(self, _id: str, query: MultiDictProxy) -> None:
         """Store request in database
@@ -65,10 +65,10 @@ class Client:
         """
 
         #TODO: raise error if request doesn't exist
-        return deserialize_multidict(self.db['requests'].pop(_id, None))
+        return json_to_multidict(self.db['requests'].pop(_id, None))
 
     async def get_request(self, _id: str) -> MultiDictProxy:
-        return deserialize_multidict(self.db['requests'].get(_id, None))
+        return json_to_multidict(self.db['requests'].get(_id, None))
 
     async def get_client_by_id(self, _id: str) -> dict:
         return next((client for client in self.db['clients'] if client['client_id'] == _id), None)

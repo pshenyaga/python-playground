@@ -9,7 +9,6 @@ def encode_client_credential(client_id: str, client_secret: str) -> str:
 
 
 def decode_client_credential(encoded: str) -> (str, str):
-    # TODO: check if string is encoded
     return tuple(urlparse.unquote(b64decode(encoded).decode()).split(':'))
 
 
@@ -32,7 +31,7 @@ def build_url (base: str, options: dict, fragment: str = '') -> str:
     return urlparse.urlunparse(url_fragments)
 
 
-def deserialize_multidict(json_string: str) -> MultiDictProxy:
+def json_to_multidict(json_string: str) -> MultiDictProxy:
     if json_string:
         result = MultiDict()
         parsed: dict = json.loads(json_string)

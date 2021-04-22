@@ -48,7 +48,8 @@ async def callback(request: web.Request) -> None:
 
     async with ClientSession() as session:
         async with session.post(auth_server_config['token_endpoint'], headers=headers, json=form_data) as response:
-            # TODO: Check for errors
+            if response.status != 200:
+                print(response)
             json_res: dict = await response.json()
             client_config.update({'access_token': json_res.get('access_token', None)})
             raise web.HTTPFound(location='/')
